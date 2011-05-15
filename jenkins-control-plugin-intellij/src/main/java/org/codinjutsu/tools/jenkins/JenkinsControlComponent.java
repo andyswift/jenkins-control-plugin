@@ -16,11 +16,11 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 
-import org.codinjustu.tools.jenkins.JenkinsConfiguration;
-import org.codinjustu.tools.jenkins.logic.DefaultJenkinsRequestManager;
-import org.codinjustu.tools.jenkins.logic.IdeaJenkinsBrowserLogic;
-import org.codinjustu.tools.jenkins.util.GuiUtil;
-import org.codinjustu.tools.jenkins.view.JenkinsConfigurationPanel;
+import org.codinjutsu.tools.jenkins.JenkinsConfiguration;
+import org.codinjutsu.tools.jenkins.logic.DefaultJenkinsRequestManager;
+import org.codinjutsu.tools.jenkins.logic.IdeaJenkinsBrowserLogic;
+import org.codinjutsu.tools.jenkins.util.GuiUtil;
+import org.codinjutsu.tools.jenkins.view.JenkinsConfigurationPanel;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -134,7 +134,7 @@ public class JenkinsControlComponent
             try {
                 configurationPanel.applyConfigurationData(configuration);
                 jenkinsBrowserLogic.reloadConfiguration();
-            } catch (org.codinjustu.tools.jenkins.exception.ConfigurationException ex) {
+            } catch (org.codinjutsu.tools.jenkins.exception.ConfigurationException ex) {
                 throw new ConfigurationException(ex.getMessage());
             }
         }
