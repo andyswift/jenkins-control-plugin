@@ -23,7 +23,7 @@ abstract class JenkinsBrowserLogic<V extends JenkinsBrowserView> {
 
     private final V view;
     private final JenkinsConfiguration configuration;
-    private final JenkinsRequestManager jenkinsRequestManager;
+    protected final JenkinsRequestManager jenkinsRequestManager;
 
     private Jenkins jenkins;
     private final Map<String, Build> currentBuildMap = new HashMap<String, Build>();
@@ -40,12 +40,12 @@ abstract class JenkinsBrowserLogic<V extends JenkinsBrowserView> {
 
 
     public void init() {
-        initGui();
+        initView();
         reloadConfiguration();
     }
 
 
-    protected abstract void initGui();
+    protected abstract void initView();
 
 
     public void reloadConfiguration() {

@@ -1,18 +1,36 @@
 package org.codinjutsu.tools.jenkins.view.annotation;
 
 import org.codinjutsu.tools.jenkins.exception.ConfigurationException;
+import org.codinjutsu.tools.jenkins.view.JenkinsConfigurationPanel;
+import org.codinjutsu.tools.jenkins.view.validator.UIValidator;
 import org.codinjutsu.tools.jenkins.view.validator.ValidatorTypeEnum;
 
 import javax.swing.*;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ValidatorAnnotationsUtils {
+public class FormValidator<T extends JComponent> {
 
-    private ValidatorAnnotationsUtils() {
+    private JenkinsConfigurationPanel formToValidate;
+    private HashMap<T, UIValidator<T>> uiValidatorByUiComponent = new HashMap<T, UIValidator<T>>();
+
+
+    private FormValidator(JenkinsConfigurationPanel formToValidate) {
+        this.formToValidate = formToValidate;
+    }
+
+    public static FormValidator init(JenkinsConfigurationPanel formToValidate) {
+        return new FormValidator(formToValidate);
+    }
+
+    public FormValidator  addValidator(T componentToValidate, UIValidator<T> validator) {
+        uiValidatorByUiComponent.put(componentToValidate, validator);
+        return this;
     }
 
 
-    public static void validate(Object formToValidate) throws ConfigurationException {
+    public void validate() throws ConfigurationException {
         for (Field field : formToValidate.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(GuiField.class)) {
                 GuiField annotation = field.getAnnotation(GuiField.class);
@@ -21,6 +39,10 @@ public class ValidatorAnnotationsUtils {
                     validatorType.getValidator().validate(getFieldObject(formToValidate, field));
                 }
             }
+        }
+
+        for (Map.Entry<T, UIValidator<T>> entry : uiValidatorByUiComponent.entrySet()) {
+            entry.getValue().validate(entry.getKey());
         }
     }
 

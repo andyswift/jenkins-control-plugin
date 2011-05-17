@@ -1,17 +1,15 @@
 package org.codinjutsu.tools.jenkins.logic;
 
+import hudson.cli.CLI;
 import org.codinjutsu.tools.jenkins.JenkinsConfiguration;
-import org.codinjutsu.tools.jenkins.model.Build;
-import org.codinjutsu.tools.jenkins.model.BuildStatusEnum;
-import org.codinjutsu.tools.jenkins.model.Jenkins;
-import org.codinjutsu.tools.jenkins.model.Job;
-import org.codinjutsu.tools.jenkins.model.View;
+import org.codinjutsu.tools.jenkins.model.*;
 import org.codinjutsu.tools.jenkins.util.RssUtil;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Proxy;
@@ -21,6 +19,13 @@ import java.util.*;
 
 @SuppressWarnings({"unchecked"})
 public class DefaultJenkinsRequestManager implements JenkinsRequestManager {
+
+    private static final String FORBIDDEN_ACCESS_CODE = "403";
+
+
+    public static final int SUCCESS_ID = 0;
+    public static final int BAD_CREDENTIAL_ID = 1;
+    public static final int BAD_URL_ID = 2;
 
     private static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
     private static final int DEFAULT_READ_TIMEOUT = 10000;
@@ -146,13 +151,56 @@ public class DefaultJenkinsRequestManager implements JenkinsRequestManager {
     }
 
 
-    public void runBuild(Job job, JenkinsConfiguration configuration) throws IOException {
+    public AuthenticationResult runBuild(Job job, JenkinsConfiguration configuration) throws IOException {
+        if (configuration.isEnableAuthentication()) {
+            return runBuildFromCLI(job, configuration);
+        }
+        return runBuildFromUrl(job, configuration);
+    }
+
+    private AuthenticationResult runBuildFromCLI(Job job, JenkinsConfiguration configuration) throws IOException {
+        CLI cli = null;
+        try {
+            cli = new CLI(new URL(configuration.getServerUrl()));
+            ByteArrayOutputStream errStream = new ByteArrayOutputStream();
+            int returnCode = cli.execute(Arrays.asList("build",
+                    "--username", configuration.getUsername(),
+                    "--password-file", configuration.getPasswordFile(),
+                    job.getName()),
+                    System.in, System.out, errStream);
+            if (returnCode == 0) {
+                return AuthenticationResult.SUCCESSFULL;
+            } else {
+                return AuthenticationResult.BAD_CREDENTIAL;
+            }
+        } catch (Exception ex) {
+            return AuthenticationResult.BAD_URL;
+        } finally {
+            if (cli != null) {
+                try {
+                    cli.close();
+                } catch (InterruptedException interrEx) {
+                    throw new IOException(interrEx.getMessage());
+                }
+            }
+        }
+    }
+
+    private AuthenticationResult runBuildFromUrl(Job job, JenkinsConfiguration configuration) throws IOException {
         URL url = urlBuilder.createRunJobUrl(job.getUrl(), configuration);
 
         InputStream inputStream = null;
         try {
             inputStream = createInputStream(url);
-        } finally {
+            return AuthenticationResult.SUCCESSFULL;
+        } catch(IOException ioEx) {
+            if (ioEx.getMessage().contains(FORBIDDEN_ACCESS_CODE)) {
+                return AuthenticationResult.BAD_CREDENTIAL;
+            } else {
+                return AuthenticationResult.BAD_URL;
+            }
+        }
+        finally {
             if (inputStream != null) {
                 inputStream.close();
             }
@@ -263,5 +311,32 @@ public class DefaultJenkinsRequestManager implements JenkinsRequestManager {
         SAXBuilder saxBuilder = new SAXBuilder();
         saxBuilder.setValidation(false);
         return saxBuilder;
+    }
+
+    public AuthenticationResult testConnexion(String serverUrl, boolean enableAuthentication, String username, String password) {
+        CLI cli;
+        try {
+            cli = new CLI(new URL(serverUrl));
+        } catch (Exception e) {
+            return AuthenticationResult.BAD_URL;
+        }
+
+        if (!enableAuthentication) {
+            return AuthenticationResult.SUCCESSFULL;
+        }
+
+        ByteArrayOutputStream errStream = new ByteArrayOutputStream();
+        int returnCode = cli.execute(Arrays.asList("login",
+                "--username", username,
+                "--password-file", password),
+                System.in, System.out, errStream);
+
+        String errStr = errStream.toString();
+        if (returnCode == 0) {
+            return AuthenticationResult.SUCCESSFULL;
+        } else {
+            System.out.println("errStr = " + errStr);
+            return AuthenticationResult.BAD_CREDENTIAL;
+        }
     }
 }

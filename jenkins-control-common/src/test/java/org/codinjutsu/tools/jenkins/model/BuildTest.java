@@ -1,7 +1,5 @@
-package org.codinjutsu.tools.jenkins.build;
+package org.codinjutsu.tools.jenkins.model;
 
-import org.codinjutsu.tools.jenkins.model.Build;
-import org.codinjutsu.tools.jenkins.model.BuildStatusEnum;
 import org.junit.Test;
 
 import static java.lang.Boolean.FALSE;

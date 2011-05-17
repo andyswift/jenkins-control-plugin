@@ -6,11 +6,12 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import org.apache.log4j.Logger;
+import org.codinjutsu.tools.jenkins.JenkinsControlComponent;
+import org.codinjutsu.tools.jenkins.logic.AuthenticationResult;
 import org.codinjutsu.tools.jenkins.logic.IdeaJenkinsBrowserLogic;
 import org.codinjutsu.tools.jenkins.model.Job;
 import org.codinjutsu.tools.jenkins.util.GuiUtil;
 import org.codinjutsu.tools.jenkins.util.HtmlUtil;
-import org.codinjutsu.tools.jenkins.JenkinsControlComponent;
 
 import java.io.IOException;
 
@@ -28,18 +29,22 @@ public class JenkinsBuildAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent event) {
-        try {
-            Project project = getProject(event);
+        Project project = getProject(event);
 
-            JenkinsControlComponent jenkinsControlComponent
-                    = project.getComponent(JenkinsControlComponent.class);
+        JenkinsControlComponent jenkinsControlComponent
+                = project.getComponent(JenkinsControlComponent.class);
+        try {
 
             Job job = jenkinsBrowserLogic.getSelectedJob();
-            jenkinsBrowserLogic.getJenkinsManager().runBuild(job, jenkinsControlComponent.getState());
 
-            jenkinsControlComponent.notifyJenkinsToolWindow(HtmlUtil.createHtmlLinkMessage(
-                    job.getName() + " build is on going",
-                    job.getUrl()), GuiUtil.loadIcon("toolWindowRun.png"));
+            AuthenticationResult authResult = jenkinsBrowserLogic.getJenkinsManager().runBuild(job, jenkinsControlComponent.getState());
+            if (AuthenticationResult.SUCCESSFULL.equals(authResult)) {
+                jenkinsControlComponent.notifyInfoJenkinsToolWindow(HtmlUtil.createHtmlLinkMessage(
+                        job.getName() + " build is on going",
+                        job.getUrl()), GuiUtil.loadIcon("toolWindowRun.png"));
+            } else {
+                jenkinsControlComponent.notifyErrorJenkinsToolWindow("Build cannot be run: " + authResult.getLabel());
+            }
         } catch (IOException ioEx) {
             LOG.error(ioEx.getMessage(), ioEx);
             GuiUtil.showErrorDialog(ioEx.getMessage(), "Error during executing the following request");

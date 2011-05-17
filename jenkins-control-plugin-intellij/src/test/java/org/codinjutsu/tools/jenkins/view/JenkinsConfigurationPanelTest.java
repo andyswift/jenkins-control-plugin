@@ -2,10 +2,12 @@ package org.codinjutsu.tools.jenkins.view;
 
 import org.codinjutsu.tools.jenkins.JenkinsConfiguration;
 import org.codinjutsu.tools.jenkins.exception.ConfigurationException;
-import org.uispec4j.CheckBox;
-import org.uispec4j.Panel;
-import org.uispec4j.TextBox;
-import org.uispec4j.UISpecTestCase;
+import org.codinjutsu.tools.jenkins.logic.JenkinsRequestManager;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.uispec4j.*;
 
 import static org.codinjutsu.tools.jenkins.JenkinsConfiguration.DEFAULT_BUILD_DELAY;
 import static org.codinjutsu.tools.jenkins.JenkinsConfiguration.DEFAULT_JENKINS_SERVER_URL;
@@ -14,52 +16,65 @@ public class JenkinsConfigurationPanelTest extends UISpecTestCase {
 
     private JenkinsConfigurationPanel jenkinsConfigurationPanel;
     private JenkinsConfiguration configuration;
+    private Panel uiSpecPanel;
 
+    @Mock
+    JenkinsRequestManager jenkinsRequestManager;
 
-    public void test_displayWithDefaultValues() throws Exception {
-        Panel panel = new Panel(jenkinsConfigurationPanel.getRootPanel());
+    public void testDisplayWithDefaultValues() throws Exception {
 
-        TextBox serverUrlBox = panel.getTextBox("serverUrl");
+        TextBox serverUrlBox = uiSpecPanel.getTextBox("serverUrl");
         serverUrlBox.textEquals(DEFAULT_JENKINS_SERVER_URL).check();
 
-        TextBox buildDelayBox = panel.getTextBox("buildDelay");
+        TextBox buildDelayBox = uiSpecPanel.getTextBox("buildDelay");
         buildDelayBox.textEquals(Integer.toString(DEFAULT_BUILD_DELAY)).check();
 
-        CheckBox enableJobCheckBox = panel.getCheckBox("enableJobAutoRefresh");
+        CheckBox enableJobCheckBox = uiSpecPanel.getCheckBox("enableJobAutoRefresh");
         assertFalse(enableJobCheckBox.isSelected());
 
-        TextBox jobRefreshPeriodBox = panel.getTextBox("jobRefreshPeriod");
+        TextBox jobRefreshPeriodBox = uiSpecPanel.getTextBox("jobRefreshPeriod");
         jobRefreshPeriodBox.textEquals("0").check();
         assertFalse(jobRefreshPeriodBox.isEnabled());
 
-        CheckBox enableRssCheckBox = panel.getCheckBox("enableRssAutoRefresh");
+        CheckBox enableRssCheckBox = uiSpecPanel.getCheckBox("enableRssAutoRefresh");
         assertFalse(enableRssCheckBox.isSelected());
 
-        TextBox rssRefreshPeriodBox = panel.getTextBox("rssRefreshPeriod");
+        TextBox rssRefreshPeriodBox = uiSpecPanel.getTextBox("rssRefreshPeriod");
         rssRefreshPeriodBox.textEquals("0").check();
         assertFalse(rssRefreshPeriodBox.isEnabled());
+
+        CheckBox enableAuthenticationCheckBox = uiSpecPanel.getCheckBox("enableAuthentication");
+        assertFalse(enableAuthenticationCheckBox.isSelected());
+
+        TextBox usernameTextbox = uiSpecPanel.getTextBox("username");
+        assertFalse(usernameTextbox.isEnabled());
+        usernameTextbox.textIsEmpty().check();
+
+        TextBox passwordTextField = uiSpecPanel.getTextBox("passwordFile");
+        assertFalse(passwordTextField.isEnabled());
+        passwordTextField.textIsEmpty().check();
+
     }
 
 
-    public void test_validationOk() throws Exception {
-        Panel panel = new Panel(jenkinsConfigurationPanel.getRootPanel());
+    public void testValidationOk() throws Exception {
 
-        TextBox serverUrlBox = panel.getTextBox("serverUrl");
+        TextBox serverUrlBox = uiSpecPanel.getTextBox("serverUrl");
         serverUrlBox.setText("http://anotherjenkinsserver:1010/jenkins");
 
-        TextBox buildDelay = panel.getTextBox("buildDelay");
+        TextBox buildDelay = uiSpecPanel.getTextBox("buildDelay");
         buildDelay.setText("10");
 
-        TextBox jobRefreshPeriodBox = panel.getTextBox("jobRefreshPeriod");
-        CheckBox enableJobCheckBox = panel.getCheckBox("enableJobAutoRefresh");
+        TextBox jobRefreshPeriodBox = uiSpecPanel.getTextBox("jobRefreshPeriod");
+        CheckBox enableJobCheckBox = uiSpecPanel.getCheckBox("enableJobAutoRefresh");
 
         assertFalse(jobRefreshPeriodBox.isEnabled());
         enableJobCheckBox.click();
         assertTrue(jobRefreshPeriodBox.isEnabled());
         jobRefreshPeriodBox.setText("2");
 
-        TextBox rssRefreshPeriodBox = panel.getTextBox("rssRefreshPeriod");
-        CheckBox enableRssCheckBox = panel.getCheckBox("enableRssAutoRefresh");
+        TextBox rssRefreshPeriodBox = uiSpecPanel.getTextBox("rssRefreshPeriod");
+        CheckBox enableRssCheckBox = uiSpecPanel.getCheckBox("enableRssAutoRefresh");
 
         assertFalse(rssRefreshPeriodBox.isEnabled());
         enableRssCheckBox.click();
@@ -69,6 +84,17 @@ public class JenkinsConfigurationPanelTest extends UISpecTestCase {
         rssRefreshPeriodBox.textEquals("0").check();
         assertFalse(rssRefreshPeriodBox.isEnabled());
 
+        CheckBox enableAuthenticationCheckBox = uiSpecPanel.getCheckBox("enableAuthentication");
+        enableAuthenticationCheckBox.click();
+
+        TextBox usernameTextbox = uiSpecPanel.getTextBox("username");
+        assertTrue(usernameTextbox.isEnabled());
+        usernameTextbox.setText("johndoe");
+
+        TextBox passwordFileField = uiSpecPanel.getTextBox("passwordFile");
+        assertTrue(passwordFileField.isEnabled());
+        passwordFileField.setText("D:/password.txt");
+
         jenkinsConfigurationPanel.applyConfigurationData(configuration);
 
         assertEquals("http://anotherjenkinsserver:1010/jenkins", configuration.getServerUrl());
@@ -77,13 +103,15 @@ public class JenkinsConfigurationPanelTest extends UISpecTestCase {
         assertEquals(0, configuration.getRssRefreshPeriod());
         assertTrue(configuration.isEnableJobAutoRefresh());
         assertFalse(configuration.isEnableRssAutoRefresh());
+        assertTrue(configuration.isEnableAuthentication());
+        assertEquals("johndoe", configuration.getUsername());
+        assertEquals("D:/password.txt", configuration.getPasswordFile());
     }
 
 
-    public void test_applyConfigWithEmptyParamValueShouldFail() throws Exception {
-        Panel panel = new Panel(jenkinsConfigurationPanel.getRootPanel());
+    public void testApplyConfigWithEmptyParamValueShouldFail() throws Exception {
 
-        TextBox serverUrlBox = panel.getTextBox("serverUrl");
+        TextBox serverUrlBox = uiSpecPanel.getTextBox("serverUrl");
         serverUrlBox.setText("");
         try {
             jenkinsConfigurationPanel.applyConfigurationData(configuration);
@@ -102,10 +130,9 @@ public class JenkinsConfigurationPanelTest extends UISpecTestCase {
     }
 
 
-    public void test_applyConfigWithMalformedUrlShouldFail() throws Exception {
-        Panel panel = new Panel(jenkinsConfigurationPanel.getRootPanel());
+    public void testApplyConfigWithMalformedUrlShouldFail() throws Exception {
 
-        TextBox serverUrlBox = panel.getTextBox("serverUrl");
+        TextBox serverUrlBox = uiSpecPanel.getTextBox("serverUrl");
         serverUrlBox.setText("portnawak");
 
         try {
@@ -117,13 +144,12 @@ public class JenkinsConfigurationPanelTest extends UISpecTestCase {
     }
 
 
-    public void test_applyConfigWithInvalidIntegerShouldFail() throws Exception {
-        Panel panel = new Panel(jenkinsConfigurationPanel.getRootPanel());
+    public void testApplyConfigWithInvalidIntegerShouldFail() throws Exception {
 
-        CheckBox enableJobCheckBox = panel.getCheckBox("enableJobAutoRefresh");
+        CheckBox enableJobCheckBox = uiSpecPanel.getCheckBox("enableJobAutoRefresh");
         enableJobCheckBox.click();
 
-        TextBox jobRefreshPeriod = panel.getTextBox("jobRefreshPeriod");
+        TextBox jobRefreshPeriod = uiSpecPanel.getTextBox("jobRefreshPeriod");
         jobRefreshPeriod.setText("portnawak");
 
         try {
@@ -150,12 +176,52 @@ public class JenkinsConfigurationPanelTest extends UISpecTestCase {
         }
     }
 
+    public void testApplyAuthenticationWithInvalidUserParameters() throws Exception {
+        CheckBox enableAuthenticationCheckBox = uiSpecPanel.getCheckBox("enableAuthentication");
+        enableAuthenticationCheckBox.click();
 
+        try {
+            jenkinsConfigurationPanel.applyConfigurationData(configuration);
+            fail();
+        } catch (ConfigurationException ex) {
+             assertEquals("'username' must be set", ex.getMessage());
+        }
+
+        TextBox usernameTextbox = uiSpecPanel.getTextBox("username");
+        usernameTextbox.setText("johndoe");
+        try {
+            jenkinsConfigurationPanel.applyConfigurationData(configuration);
+            fail();
+        } catch (ConfigurationException ex) {
+             assertEquals("'passwordFile' must be set", ex.getMessage());
+        }
+
+        TextBox passwordTextField = uiSpecPanel.getTextBox("passwordFile");
+        passwordTextField.setText("D:/password.txt");
+        jenkinsConfigurationPanel.applyConfigurationData(configuration);
+        assertTrue(configuration.isEnableAuthentication());
+        assertEquals("johndoe", configuration.getUsername());
+        assertEquals("D:/password.txt", configuration.getPasswordFile());
+
+
+        enableAuthenticationCheckBox.click();
+        jenkinsConfigurationPanel.applyConfigurationData(configuration);
+        assertFalse(configuration.isEnableAuthentication());
+        assertEquals("", configuration.getUsername());
+        assertEquals("", configuration.getPasswordFile());
+
+    }
+
+//component.with.browse.button.browse.button.tooltip.text
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        jenkinsConfigurationPanel = new JenkinsConfigurationPanel();
+        MockitoAnnotations.initMocks(this);
+        jenkinsConfigurationPanel = new JenkinsConfigurationPanel(jenkinsRequestManager, false);
+
         configuration = new JenkinsConfiguration();
         jenkinsConfigurationPanel.loadConfigurationData(configuration);
+
+        uiSpecPanel = new Panel(jenkinsConfigurationPanel.getRootPanel());
     }
 }

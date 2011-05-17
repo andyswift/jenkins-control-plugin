@@ -4,19 +4,24 @@ public class JenkinsConfiguration {
 
     public static final String DEFAULT_JENKINS_SERVER_URL = "http://dummyjenkinsserver";
     public static final int DEFAULT_BUILD_DELAY = 0;
-    public static final int RESET_VALUE = 0;
+    public static final int RESET_PERIOD_VALUE = 0;
+    public static final String RESET_STR_VALUE = "";
 
     private String serverUrl = DEFAULT_JENKINS_SERVER_URL;
     private int delay = DEFAULT_BUILD_DELAY;
-    private int jobRefreshPeriod = RESET_VALUE;
 
-    private int rssRefreshPeriod = RESET_VALUE;
+    private int jobRefreshPeriod = RESET_PERIOD_VALUE;
+    private int rssRefreshPeriod = RESET_PERIOD_VALUE;
 
     private boolean enableJobAutoRefresh = false;
 
     private boolean enableRssAutoRefresh = false;
 
     private String preferredView = "";
+
+    private boolean enableAuthentication = false;
+    private String username = RESET_STR_VALUE;
+    private String passwordFile = RESET_STR_VALUE;
 
 
     public String getServerUrl() {
@@ -92,5 +97,29 @@ public class JenkinsConfiguration {
 
     public void setPreferredView(String preferredView) {
         this.preferredView = preferredView;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPasswordFile() {
+        return passwordFile;
+    }
+
+    public void setPasswordFile(String passwordFile) {
+        this.passwordFile = passwordFile;
+    }
+
+    public void setEnableAuthentication(boolean enableAuthentication) {
+        this.enableAuthentication = enableAuthentication;
+    }
+
+    public boolean isEnableAuthentication() {
+        return enableAuthentication;
     }
 }

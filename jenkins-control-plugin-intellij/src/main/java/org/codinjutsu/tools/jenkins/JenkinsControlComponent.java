@@ -15,8 +15,7 @@ import com.intellij.ui.BrowserHyperlinkListener;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-
-import org.codinjutsu.tools.jenkins.JenkinsConfiguration;
+import org.codinjutsu.tools.jenkins.logic.AuthenticationResult;
 import org.codinjutsu.tools.jenkins.logic.DefaultJenkinsRequestManager;
 import org.codinjutsu.tools.jenkins.logic.IdeaJenkinsBrowserLogic;
 import org.codinjutsu.tools.jenkins.util.GuiUtil;
@@ -25,6 +24,8 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 @State(
         name = JenkinsControlComponent.JENKINS_CONTROL_COMPONENT_NAME,
@@ -34,7 +35,7 @@ public class JenkinsControlComponent
         implements ProjectComponent, Configurable, PersistentStateComponent<JenkinsConfiguration> {
 
     public static final String JENKINS_CONTROL_COMPONENT_NAME = "JenkinsControlComponent";
-    private static final String JENKINS_CONTROL_PLUGIN_NAME = "Jenkins Control Plugin";
+    static final String JENKINS_CONTROL_PLUGIN_NAME = "Jenkins Control Plugin";
 
     private static final String JENKINS_BROWSER = "jenkinsBrowser";
     private static final String JENKINS_BROWSER_TITLE = "Jenkins Browser";
@@ -45,6 +46,7 @@ public class JenkinsControlComponent
 
     private Project project;
     private IdeaJenkinsBrowserLogic jenkinsBrowserLogic;
+    private DefaultJenkinsRequestManager jenkinsRequestManager;
 
 
     public JenkinsControlComponent(Project project) {
@@ -72,7 +74,7 @@ public class JenkinsControlComponent
 
     public JComponent createComponent() {
         if (configurationPanel == null) {
-            configurationPanel = new JenkinsConfigurationPanel();
+            configurationPanel = new JenkinsConfigurationPanel(jenkinsRequestManager);
         }
         return configurationPanel.getRootPanel();
     }
@@ -99,6 +101,7 @@ public class JenkinsControlComponent
 
 
     public void projectOpened() {
+        jenkinsRequestManager = new DefaultJenkinsRequestManager();
         installJenkinsBrowser();
     }
 
@@ -109,8 +112,10 @@ public class JenkinsControlComponent
                 true,
                 ToolWindowAnchor.RIGHT);
 
-        jenkinsBrowserLogic = new IdeaJenkinsBrowserLogic(configuration, new DefaultJenkinsRequestManager());
+        jenkinsBrowserLogic = new IdeaJenkinsBrowserLogic(configuration, jenkinsRequestManager);
         jenkinsBrowserLogic.init();
+
+
         JPanel yourContentPanel = jenkinsBrowserLogic.getView();
         Content content = ContentFactory.SERVICE.getInstance()
                 .createContent(yourContentPanel, JENKINS_BROWSER_TITLE, false);
@@ -146,9 +151,14 @@ public class JenkinsControlComponent
     }
 
 
-    public void notifyJenkinsToolWindow(String message, Icon icon) {
+    public void notifyInfoJenkinsToolWindow(String message, Icon icon) {
         ToolWindowManager.getInstance(project).notifyByBalloon(JENKINS_BROWSER, MessageType.INFO,
                 message, icon, new BrowserHyperlinkListener());
+    }
+
+    public void notifyErrorJenkinsToolWindow(String message) {
+        ToolWindowManager.getInstance(project).notifyByBalloon(JENKINS_BROWSER, MessageType.ERROR,
+                message);
     }
 
 

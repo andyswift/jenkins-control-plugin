@@ -7,9 +7,6 @@ import java.awt.*;
 
 class JenkinsViewComboRenderer extends DefaultListCellRenderer {
 
-    private static final long serialVersionUID = -2557865411403922631L;
-
-
     @Override
     public Component getListCellRendererComponent(JList list,
                                                   Object value,

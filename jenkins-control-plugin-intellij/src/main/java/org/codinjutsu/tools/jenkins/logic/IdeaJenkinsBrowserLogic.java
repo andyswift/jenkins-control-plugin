@@ -31,7 +31,7 @@ public class IdeaJenkinsBrowserLogic extends JenkinsBrowserLogic<JenkinsBrowserP
 
 
     @Override
-    protected void initGui() {
+    protected void initView() {
 
         installRssActions(getView().getRssActionPanel());
         installBrowserActions(getView().getJobTree(), getView().getActionPanel());
@@ -77,12 +77,14 @@ public class IdeaJenkinsBrowserLogic extends JenkinsBrowserLogic<JenkinsBrowserP
     void installBrowserActions(JTree jobTree, JPanel toolBar) {
         DefaultActionGroup actionGroup = new DefaultActionGroup(JENKINS_JOB_ACTION_GROUP, true);
         if (ApplicationManager.getApplication() != null) {
-            actionGroup.add(new RefreshViewAction(this));
+            actionGroup.add(new RefreshNodeAction(this));
             actionGroup.addSeparator();
             actionGroup.add(new JenkinsBuildAction(this));
             actionGroup.addSeparator();
             actionGroup.add(new GotoJobPageAction(getView()));
             actionGroup.add(new GotoLastBuildPageAction(getView()));
+            actionGroup.addSeparator();
+            actionGroup.add(new OpenPluginSettingsAction());
         }
         installActionGroupInToolBar(actionGroup, toolBar, ActionManager.getInstance(), JENKINS_ACTIONS);
         installActionGroupInPopupMenu(actionGroup, jobTree, ActionManager.getInstance());

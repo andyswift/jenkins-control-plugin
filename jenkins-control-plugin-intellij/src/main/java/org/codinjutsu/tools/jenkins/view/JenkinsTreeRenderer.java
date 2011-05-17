@@ -1,6 +1,7 @@
 package org.codinjutsu.tools.jenkins.view;
 
 import org.codinjutsu.tools.jenkins.model.Build;
+import org.codinjutsu.tools.jenkins.model.BuildStatusEnum;
 import org.codinjutsu.tools.jenkins.model.Jenkins;
 import org.codinjutsu.tools.jenkins.model.Job;
 import org.codinjutsu.tools.jenkins.util.GuiUtil;
@@ -11,9 +12,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
 
 class JenkinsTreeRenderer extends DefaultTreeCellRenderer {
-
-    private static final long serialVersionUID = 7616788944783299863L;
-
 
     @Override
     public Component getTreeCellRendererComponent(JTree tree,
@@ -43,10 +41,13 @@ class JenkinsTreeRenderer extends DefaultTreeCellRenderer {
         } else if (userObject instanceof Job) {
             Job job = (Job) node.getUserObject();
 
-            super.getTreeCellRendererComponent(tree, buildLabel(job), sel,
+            String jobLabel = buildLabel(job);
+            
+            super.getTreeCellRendererComponent(tree, jobLabel, sel,
                     expanded, leaf, row,
                     hasFocus);
 
+            setToolTipText(jobLabel);
             setFont(job);
             setIcon(findRightJobStateIcon(job));
             return this;
@@ -93,14 +94,14 @@ class JenkinsTreeRenderer extends DefaultTreeCellRenderer {
 
 
     private static Icon findRightJobStateIcon(Job job) {
-        JobStateEnum[] jobStates = JobStateEnum.values();
-        for (JobStateEnum jobState : jobStates) {
-            String stateName = jobState.getName();
+        BuildStatusEnum[] jobStates = BuildStatusEnum.values();
+        for (BuildStatusEnum jobState : jobStates) {
+            String stateName = jobState.getColor();
             if (job.getColor().startsWith(stateName)) {
                 return jobState.getIcon();
             }
         }
 
-        return JobStateEnum.DISABLED.getIcon();
+        return BuildStatusEnum.NULL.getIcon();
     }
 }

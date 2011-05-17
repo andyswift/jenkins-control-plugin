@@ -1,23 +1,21 @@
 package org.codinjutsu.tools.jenkins.logic;
 
+import hudson.cli.CLI;
 import org.codinjutsu.tools.jenkins.JenkinsConfiguration;
-import org.codinjutsu.tools.jenkins.model.Build;
-import org.codinjutsu.tools.jenkins.model.BuildStatusEnum;
-import org.codinjutsu.tools.jenkins.model.Jenkins;
-import org.codinjutsu.tools.jenkins.model.Job;
-import org.codinjutsu.tools.jenkins.model.View;
+import org.codinjutsu.tools.jenkins.model.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.io.ByteArrayOutputStream;
+import java.net.URL;
+import java.util.*;
 
-import static org.codinjutsu.tools.jenkins.model.BuildStatusEnum.*;
+import static org.codinjutsu.tools.jenkins.model.BuildStatusEnum.FAILURE;
+import static org.codinjutsu.tools.jenkins.model.BuildStatusEnum.SUCCESS;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -96,7 +94,7 @@ public class DefaultJenkinsRequestManagerTest {
 
         Map<String, Build> actualJobBuildMap = requestManager.loadJenkinsRssLatestBuilds(configuration);
 
-        Map<String, Build> expectedJobBuildMap = buildLastJobResultMap(new String[][] {
+        Map<String, Build> expectedJobBuildMap = buildLastJobResultMap(new String[][]{
                 {"infra_main_svn_to_git", "http://ci.jenkins-ci.org/job/infra_main_svn_to_git/351/", "351", BuildStatusEnum.SUCCESS.getStatus()},
                 {"TESTING-HUDSON-7434", "http://ci.jenkins-ci.org/job/TESTING-HUDSON-7434/2/", "2", BuildStatusEnum.FAILURE.getStatus()},
                 {"infa_release.rss", "http://ci.jenkins-ci.org/job/infa_release.rss/139/", "139", BuildStatusEnum.SUCCESS.getStatus()},
@@ -118,11 +116,30 @@ public class DefaultJenkinsRequestManagerTest {
         return expectedJobBuildMap;
     }
 
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         configuration = new JenkinsConfiguration();
         requestManager = new DefaultJenkinsRequestManager(urlBuilderMock);
+    }
+
+
+    public static void main(String[] args) throws Exception{
+
+        String hudsonHost = "http://localhost:8080/hudson";
+
+        CLI cli = new CLI(new URL(hudsonHost));
+
+
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            cli.execute(Arrays.asList("login", "--username", "dboissier", "--password", "dboissier"), System.in, System.out, byteArrayOutputStream);
+            cli.execute(Arrays.asList("build", "-s", "jenkins-control-plugin"), System.in, System.out, byteArrayOutputStream);
+            System.out.println("byteArrayOutputStream = " + byteArrayOutputStream.toString());
+        } finally {
+            cli.close();
+        }
+
+
     }
 }

@@ -17,6 +17,7 @@ import static org.codinjutsu.tools.jenkins.model.BuildStatusEnum.SUCCESS;
 
 public class RssLatestJobPanel implements RssLatestJobView {
     private JPanel rssContentPanel;
+    private JPanel rootPanel;
 
     public RssLatestJobPanel() {
         rssContentPanel.setLayout(new BoxLayout(rssContentPanel, BoxLayout.Y_AXIS));

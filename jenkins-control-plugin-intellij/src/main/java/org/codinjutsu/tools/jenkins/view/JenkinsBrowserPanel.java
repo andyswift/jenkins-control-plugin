@@ -12,10 +12,6 @@ import java.awt.*;
 import java.util.List;
 
 public class JenkinsBrowserPanel extends JPanel implements JenkinsBrowserView {
-
-    private static final long serialVersionUID = -9004598954453193352L;
-
-
     private JComboBox viewCombo;
     private JTree jobTree;
     private JPanel rootPanel;
@@ -121,7 +117,7 @@ public class JenkinsBrowserPanel extends JPanel implements JenkinsBrowserView {
 
     public void setErrorMsg() {
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new Jenkins(
-                "(Unable to connect. See Settings -> Jenkins Control Plugin)"));
+                "(Unable to connect. Check Jenkins Plugin Settings.)"));
         jobTree.setModel(new DefaultTreeModel(rootNode));
     }
 
