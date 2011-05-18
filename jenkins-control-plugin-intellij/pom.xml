@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.codinjustu.tools.jenkins</groupId>
+        <groupId>org.codinjutsu.tools.jenkins</groupId>
         <artifactId>jenkins-control-plugins</artifactId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.3-SNAPSHOT</version>
     </parent>
     <artifactId>jenkins-control-plugin-intellij</artifactId>
 
@@ -19,7 +19,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.codinjustu.tools.jenkins</groupId>
+            <groupId>org.codinjutsu.tools.jenkins</groupId>
             <artifactId>jenkins-control-common</artifactId>
             <version>${project.version}</version>
         </dependency>

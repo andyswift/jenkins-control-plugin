@@ -4,11 +4,11 @@
   <modelVersion>4.0.0</modelVersion>
   
   <parent>
-    <groupId>org.codinjustu.tools.jenkins</groupId>
+    <groupId>org.codinjutsu.tools.jenkins</groupId>
     <artifactId>jenkins-control-plugins</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
   </parent>
-  <artifactId>jenkins-contro-plugin-eclipse</artifactId>
+  <artifactId>jenkins-control-plugin-eclipse</artifactId>
   <packaging>zip</packaging>
   <name>Jenkins control plugin for Eclipse</name>
   <build>
