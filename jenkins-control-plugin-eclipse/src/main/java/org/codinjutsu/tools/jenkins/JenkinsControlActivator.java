@@ -7,18 +7,18 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class JenkinControlActivator extends AbstractUIPlugin {
+public class JenkinsControlActivator extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "jenkins-control-plugin-eclipse"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "org.codinjutsu.tools.jenkins";
 
 	// The shared instance
-	private static JenkinControlActivator plugin;
+	private static JenkinsControlActivator plugin;
 	
 	/**
 	 * The constructor
 	 */
-	public JenkinControlActivator() {
+	public JenkinsControlActivator() {
 	}
 
 	/*
@@ -44,7 +44,7 @@ public class JenkinControlActivator extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static JenkinControlActivator getDefault() {
+	public static JenkinsControlActivator getDefault() {
 		return plugin;
 	}
 

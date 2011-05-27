@@ -9,7 +9,7 @@
     <version>0.3-SNAPSHOT</version>
   </parent>
   <artifactId>jenkins-control-plugin-eclipse</artifactId>
-  <packaging>zip</packaging>
+  <packaging>jar</packaging>
   <name>Jenkins control plugin for Eclipse</name>
   <build>
     <plugins>
@@ -18,9 +18,9 @@
         <artifactId>pde-maven-plugin</artifactId>
         <version>1.0-alpha-1</version>
         <extensions>true</extensions>
-<!--        <configuration>
-          <eclipseInstall>D:\eclipse-3.2</eclipseInstall>
-        </configuration>-->
+        <configuration>
+          <eclipseInstall>/Applications/Java/eclipse</eclipseInstall>
+        </configuration>
       </plugin>
     </plugins>
   </build>

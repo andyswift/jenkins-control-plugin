@@ -5,22 +5,23 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="Sample Category"
+            name="Jenkins"
             id="jenkins-control-plugin-eclipse">
       </category>
       <view
-            name="Sample View"
-            icon="icons/sample.gif"
+            name="Jenkins Jobs"
+            icon="icons/jenkins_logo_16x16.png"
             category="jenkins-control-plugin-eclipse"
-            class="org.codingjustu.tools.jenkins.view.SampleView"
-            id="org.codingjustu.tools.jenkins.view.SampleView">
+            class="org.codinjutsu.tools.jenkins.view.JenkinsJobsView"
+            id="org.codinjutsu.tools.jenkins.view.JenkinsJobsView">
       </view>
-   </extension>
-   <extension
-         point="org.eclipse.help.contexts">
-      <contexts
-            file="contexts.xml">
-      </contexts>
+      <view
+            name="Jenkins Builds"
+            icon="icons/jenkins_logo_16x16.png"
+            category="jenkins-control-plugin-eclipse"
+            class="org.codinjutsu.tools.jenkins.view.JenkinsBuildsView"
+            id="org.codinjutsu.tools.jenkins.view.JenkinsBuidsView">
+      </view>
    </extension>
 
 </plugin>

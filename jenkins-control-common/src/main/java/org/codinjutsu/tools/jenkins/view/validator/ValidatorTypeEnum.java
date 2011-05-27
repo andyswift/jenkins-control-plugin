@@ -1,5 +1,7 @@
 package org.codinjutsu.tools.jenkins.view.validator;
 
+import javax.swing.JComponent;
+
 public enum ValidatorTypeEnum {
 
     STRICT_POSITIVE_INTEGER(new StrictPositiveIntegerValidator()),
@@ -7,15 +9,15 @@ public enum ValidatorTypeEnum {
     URL(new UrlValidator()),
     NOTNULL(new NotNullValidator());
 
-    private final UIValidator validator;
+    private final UIValidator<? extends JComponent> validator;
 
 
-    ValidatorTypeEnum(UIValidator validator) {
+    ValidatorTypeEnum(UIValidator<? extends JComponent> validator) {
         this.validator = validator;
     }
 
 
-    public UIValidator getValidator() {
+    public UIValidator<? extends JComponent> getValidator() {
         return validator;
     }
 }

@@ -10,6 +10,7 @@ import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 
 public class BuildResultPanel extends JPanel {
+    private static final long serialVersionUID = 6581772419096128805L;
     private JButton closeButton;
     private JPanel rootPanel;
     private JPanel buildStatusPanel;
