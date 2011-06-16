@@ -3,7 +3,6 @@ package org.codinjutsu.tools.jenkins.view;
 import javax.print.attribute.standard.Severity;
 
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -11,6 +10,9 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -25,11 +27,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.UIPlugin;
 import org.eclipse.ui.part.ViewPart;
 
 public class JenkinsBrowserView extends ViewPart {
@@ -82,13 +84,13 @@ public class JenkinsBrowserView extends ViewPart {
 		
 		form.setWeights(new int[] {2, 1});
 
-//		viewer.setContentProvider(new ViewContentProvider());
-//		viewer.setLabelProvider(new ViewLabelProvider());
-//		viewer.setSorter(new NameSorter());
-//		viewer.setInput(getViewSite());
+		viewer.setContentProvider(new ViewContentProvider());
+		viewer.setLabelProvider(new ViewLabelProvider());
+		viewer.setSorter(new NameSorter());
+		viewer.setInput(getViewSite());
 		
 		// Create the help context id for the viewer's control
-//		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "jenkins-control-plugin-eclipse.viewer");
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "jenkins-control-plugin-eclipse.viewer");
 		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
@@ -103,9 +105,9 @@ public class JenkinsBrowserView extends ViewPart {
 				JenkinsBrowserView.this.fillContextMenu(manager);
 			}
 		});
-		// Menu menu = menuMgr.createContextMenu(viewer.getControl());
-		// viewer.getControl().setMenu(menu);
-		// getSite().registerContextMenu(menuMgr, viewer);
+		Menu menu = menuMgr.createContextMenu(viewer.getControl());
+		viewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, viewer);
 	}
 
 	private void contributeToActionBars() {
@@ -162,23 +164,23 @@ public class JenkinsBrowserView extends ViewPart {
 	}
 
 	private void hookDoubleClickAction() {
-//		viewer.addDoubleClickListener(new IDoubleClickListener() {
-//			public void doubleClick(DoubleClickEvent event) {
-//				doubleClickAction.run();
-//			}
-//		});
+		viewer.addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				doubleClickAction.run();
+			}
+		});
 	}
 	private void showMessage(String message) {
-//		MessageDialog.openInformation(
-//			viewer.getControl().getShell(),
-//			"Jenkins Browser",
-//			message);
+		MessageDialog.openInformation(
+			viewer.getControl().getShell(),
+			"Jenkins Browser",
+			message);
 	}
 
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
-//		viewer.getControl().setFocus();
+		viewer.getControl().setFocus();
 	}
 }

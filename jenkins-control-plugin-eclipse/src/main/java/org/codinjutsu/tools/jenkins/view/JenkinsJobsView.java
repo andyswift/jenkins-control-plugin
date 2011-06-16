@@ -6,21 +6,27 @@ import org.codinjutsu.tools.jenkins.JenkinsControlActivator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class JenkinsJobsView extends ViewPart {
 
 	private Action actionRefresh;
-	
 	private Action actionBuildOnJenkins;
-	
 	private Action actionGoToJobPage;
-	
 	private Action actionGoToLatestBuildPage;
+	private Action actionFilterAll;
+	private Action actionFilterAllFailed;
+	private Action actionFilterAllUnstable;
+	private TableViewer viewer;
 	
 	@Override
 	public void createPartControl(Composite parent) {
@@ -52,7 +58,9 @@ public class JenkinsJobsView extends ViewPart {
 						new Status(Severity.REPORT.getValue(), JenkinsControlActivator.PLUGIN_ID, "Go to the latest build page"));
 			}
 		};
-		
+		actionFilterAll = new Action("All") {};
+		actionFilterAllFailed = new Action("All failed") {};
+		actionFilterAllUnstable = new Action("All unstable") {};
 		final IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		toolBarManager.add(actionRefresh);
 		toolBarManager.add(new Separator());
@@ -60,6 +68,24 @@ public class JenkinsJobsView extends ViewPart {
 		toolBarManager.add(new Separator());
 		toolBarManager.add(actionGoToJobPage);
 		toolBarManager.add(actionGoToLatestBuildPage);
+		
+		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager manager) {
+				manager.add(actionFilterAll);
+				manager.add(actionFilterAllFailed);
+				manager.add(actionFilterAllUnstable);
+			}
+		});
+		viewer = new TableViewer(parent);
+		Menu menu = menuMgr.createContextMenu(viewer.getControl());
+		getSite().registerContextMenu(menuMgr, viewer);
+		viewer.getControl().setMenu(menu);
+		getViewSite().getActionBars().getMenuManager().add(new Action("MenuManager") {
+			
+		});
+		
 	}
 
 	@Override

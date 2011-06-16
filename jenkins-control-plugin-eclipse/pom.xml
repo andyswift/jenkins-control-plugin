@@ -3,14 +3,41 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   
-  <parent>
-    <groupId>org.codinjutsu.tools.jenkins</groupId>
-    <artifactId>jenkins-control-plugins</artifactId>
-    <version>0.3-SNAPSHOT</version>
-  </parent>
+  <groupId>org.codinjutsu.tools.jenkins</groupId>
   <artifactId>jenkins-control-plugin-eclipse</artifactId>
-  <packaging>jar</packaging>
+  <version>0.3-SNAPSHOT</version>
+  
+  <properties>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
   <name>Jenkins control plugin for Eclipse</name>
+  <description>A Jenkins Plugin for Eclipse</description>
+  <inceptionYear>2011</inceptionYear>
+
+  <developers>
+    <developer>
+      <name>David Boissier</name>
+      <email>david [dot] boissier [at] gmail [dot] com</email>
+      <organization>Codinjutsu</organization>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Sébastian Le Merdy</name>
+      <email>sebastian [dot] lemerdy [at] gmail [dot] com</email>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+<!--
   <build>
     <plugins>
       <plugin>
@@ -24,4 +51,10 @@
       </plugin>
     </plugins>
   </build>
+-->
+  <scm>
+    <connection>scm:git:ssh://git@github.com/dboissier/jenkins-control-plugin.git</connection>
+    <url>git:ssh://git@github.com/dboissier/jenkins-control-plugin.git</url>
+  </scm>
+
 </project>

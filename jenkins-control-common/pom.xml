@@ -3,12 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.codinjutsu.tools.jenkins</groupId>
-        <artifactId>jenkins-control-plugins</artifactId>
-        <version>0.3-SNAPSHOT</version>
-    </parent>
+    <groupId>org.codinjutsu.tools.jenkins</groupId>
     <artifactId>jenkins-control-common</artifactId>
+    <version>0.3-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -46,5 +43,77 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <properties>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!--
+      | Project Information
+    -->
+    <name>Jenkins Common Control Plugin</name>
+    <description>A Jenkins Plugin base for Intellij and Eclipse</description>
+    <inceptionYear>2011</inceptionYear>
+
+    <developers>
+        <developer>
+            <name>David Boissier</name>
+            <email>david [dot] boissier [at] gmail [dot] com</email>
+            <organization>Codinjutsu</organization>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <name>Sébastian Le Merdy</name>
+            <email>sebastian [dot] lemerdy [at] gmail [dot] com</email>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+
+    <!--
+      { License Information
+    -->
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <!--
+      | SCM Information
+    -->
+    <scm>
+        <connection>scm:git:ssh://git@github.com/dboissier/jenkins-control-plugin.git</connection>
+        <url>git:ssh://git@github.com/dboissier/jenkins-control-plugin.git</url>
+    </scm>
+
+
+    <!--
+      | Reporting tools
+    -->
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <formats>
+                        <format>xml</format>
+                    </formats>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <findbugsXmlOutput>true</findbugsXmlOutput>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 
 </project>
